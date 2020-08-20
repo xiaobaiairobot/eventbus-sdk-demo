@@ -1,0 +1,26 @@
+server:
+  port: 50002
+
+spring:
+  application:
+    name: event-eb-service
+  event-bus:
+    server-ip: 172.30.13.177
+    producer-port: 31236
+    consumer-port: 31234
+    source-topic: 700799ed3a3c47c68da8638fd04b399b
+    target-topic: 700799ed3a3c47c68da8638fd04b399b
+    consumer-group: g_5a1c3b1296004436b58bad9b0dd7fd3d
+    send-times: 10000
+    columns: long,string,string
+
+springfox:
+  documentation:
+    header: 消息测试服务
+    swagger:
+      v2:
+        path: /api-docs
+
+logging:
+  level:
+    root: info
