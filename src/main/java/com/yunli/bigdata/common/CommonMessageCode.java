@@ -1,6 +1,8 @@
 package com.yunli.bigdata.common;
 
 
+import com.yunli.bigdata.example.exception.ErrorCode;
+
 /**
  * 全局Message
  *

@@ -6,11 +6,11 @@ spring:
     name: event-eb-service
   event-bus:
     server-ip: 172.30.13.177
-    producer-port: 31236
-    consumer-port: 31234
-    source-topic: 700799ed3a3c47c68da8638fd04b399b
-    target-topic: 700799ed3a3c47c68da8638fd04b399b
-    consumer-group: g_5a1c3b1296004436b58bad9b0dd7fd3d
+    producer-port: 32236
+    consumer-port: 32234
+    source-topic: a52b4029d0f24c909b019c39e96df9d5
+    target-topic: a52b4029d0f24c909b019c39e96df9d5
+    consumer-group: g_a52b4029d0f24c909b019c39e96df9d5
     send-times: 10000
     columns: long,string,string
 

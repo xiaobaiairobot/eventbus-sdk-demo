@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.yunli.bigdata.common.CommonMessageCode;
 import com.yunli.bigdata.common.EventResponseCode;
+import com.yunli.bigdata.example.dto.CreateCredentialMsgRequest;
 import com.yunli.bigdata.example.dto.CreateMessageRequest;
 import com.yunli.bigdata.example.service.EventService;
 import com.yunli.bigdata.util.Result;
@@ -63,7 +64,7 @@ public class EventController {
     }
   }
 
-  @ApiOperation(value = "按照参数配置发送消息", notes = "按照参数配置发送消息", nickname = "sendMessageByParams")
+  @ApiOperation(value = "按照参数配置发送消息，用于无证书校验", notes = "按照参数配置发送消息，用于无证书校验，不带任何证书信息", nickname = "sendMessageByParams")
   @PostMapping(value = "")
   public ResponseEntity<Result<String>> sendMessageByParams(
       @ApiParam(value = "消息参数请求体", required = true) @Valid @RequestBody CreateMessageRequest createMessageRequest
@@ -72,6 +73,21 @@ public class EventController {
       eventService.createMessageService(createMessageRequest);
       return ResponseEntity.status(HttpStatus.CREATED).body(Result.success("作业提交成功"));
     } catch (Exception e) {
+      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+          .body(Result.error(CommonMessageCode.ERROR_500.getCode(), CommonMessageCode.ERROR_500.getMessage()));
+    }
+  }
+
+  @ApiOperation(value = "按照参数配置发送消息，需要证书信息", notes = "按照参数配置发送消息，需要证书信息", nickname = "sendMessageByCredential")
+  @PostMapping(value = "credential")
+  public ResponseEntity<Result<String>> sendMessageByCredential(
+      @ApiParam(value = "消息参数请求体", required = true) @Valid @RequestBody CreateCredentialMsgRequest createCredentialMsgRequest
+  ) {
+    try {
+      eventService.createMessageService(createCredentialMsgRequest);
+      return ResponseEntity.status(HttpStatus.CREATED).body(Result.success("作业提交成功"));
+    } catch (Exception e) {
+      e.printStackTrace();
       return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
           .body(Result.error(CommonMessageCode.ERROR_500.getCode(), CommonMessageCode.ERROR_500.getMessage()));
     }

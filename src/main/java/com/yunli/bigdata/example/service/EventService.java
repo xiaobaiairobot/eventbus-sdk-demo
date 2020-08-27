@@ -1,5 +1,6 @@
 package com.yunli.bigdata.example.service;
 
+import com.yunli.bigdata.example.dto.CreateCredentialMsgRequest;
 import com.yunli.bigdata.example.dto.CreateMessageRequest;
 
 /**
@@ -10,4 +11,6 @@ public interface EventService {
   void sendMessage();
 
   void createMessageService(CreateMessageRequest createMessageRequest);
+
+  void createMessageService(CreateCredentialMsgRequest createCredentialMsgRequest);
 }

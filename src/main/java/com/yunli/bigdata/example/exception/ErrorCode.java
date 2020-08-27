@@ -1,4 +1,4 @@
-package com.yunli.bigdata.common;
+package com.yunli.bigdata.example.exception;
 
 /**
  * 全局MessageCode接口

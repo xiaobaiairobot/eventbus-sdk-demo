@@ -34,6 +34,14 @@ public class SendWorker implements Runnable {
     producer = new myProducer(host, port, null);
   }
 
+
+  public SendWorker(EventBusConfiguration eventBusConfiguration, AccessCredential accessCredential) {
+    this.eventBusConfiguration = eventBusConfiguration;
+    String host = this.eventBusConfiguration.getServer();
+    int port = this.eventBusConfiguration.getProducerPort().intValue();
+    producer = new myProducer(host, port, accessCredential);
+  }
+
   @Override
   public void run() {
     for (int i = 0; i < eventBusConfiguration.getSendTimes(); i++) {
