@@ -3,13 +3,13 @@
 ## 打包编译方法
 ```shell script
 # mvn clean package -DskipTests
-# ./build-images.sh eventbus_demo
-# ./push-images-RC.sh eventbus_demo
+# ./build-images.sh demo
+# ./push-images.sh demo
 ```
 
 ## 启动
 ```shell script
-# docker run -p 50002:50002 -d --restart always --name eventbus_demo registry.cn-beijing.aliyuncs.com/yunli-com.yunli.bigdata/eventbus-demo:RC-1.0.0
+# docker run -p 50002:50002 -d --restart always --name eventbus_demo registry.cn-beijing.aliyuncs.com/yunli-com.yunli.bigdata/eventbus-sdk-demo:1.0.0
 ```
 
 ## 发送
