@@ -12,11 +12,11 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.yunli.bigdata.common.CommonMessageCode;
 import com.yunli.bigdata.common.EventResponseCode;
-import com.yunli.bigdata.dsep.foundation.Result;
-import com.yunli.bigdata.dsep.service.common.constant.CommonMessageCode;
 import com.yunli.bigdata.example.dto.CreateMessageRequest;
 import com.yunli.bigdata.example.service.EventService;
+import com.yunli.bigdata.util.Result;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -28,7 +28,7 @@ import io.swagger.annotations.ApiResponses;
  * @author david
  * @date 2020/7/28 7:37 下午
  */
-@Api(tags = "event-eb-sample", value = "消息测试")
+@Api(tags = "event-eb-sample", value = "消息测试" )
 @ApiResponses(value = {
     @ApiResponse(code = EventResponseCode.SUCCESS_CODE, message = EventResponseCode.SUCCESS_MSG),
     @ApiResponse(code = EventResponseCode.BAD_REQUEST_CODE, message = EventResponseCode.BAD_REQUEST_MSG),

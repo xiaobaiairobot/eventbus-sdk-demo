@@ -8,10 +8,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.StringUtils;
 
-import com.yunli.bigdata.dsep.foundation.util.DateUtil;
 import com.yunli.bigdata.eventbus.sdk.AccessCredential;
 import com.yunli.bigdata.eventbus.sdk.Event;
 import com.yunli.bigdata.example.config.EventBusConfiguration;
+import com.yunli.bigdata.util.DateUtil;
 
 /**
  * @author david
