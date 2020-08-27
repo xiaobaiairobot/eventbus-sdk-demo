@@ -27,3 +27,33 @@ sendTimes表示一次请求发送多少条数据（连续发送中间不停顿�
   	"columns":"string"
   }'
 ```
+带证书方式的提交
+```shell script
+# curl --location --request POST 'http://localhost:50002/eb/test/credential' \
+  --header 'Content-Type: application/json' \
+  --data-raw '{
+  	"server":"172.30.13.177",
+  	"producerPort":"32236",
+  	"sourceTopic":"a52b4029d0f24c909b019c39e96df9d5",
+  	"sendTimes":2,
+  	"columns":"string,long,string",
+  	"key": "bigdata#system",
+          "signature": "b649*******cKrE=",
+          "expiredDate": "2020-08-27 13:00:00.000",
+          "appId": "bigdata_dsep",
+          "privileges": [
+              {
+                  "resource": "a52b4029d0f24c909b019c39e96df9d5",
+                  "action": "consume"
+              },
+              {
+                  "resource": "a52b4029d0f24c909b019c39e96df9d5",
+                  "action": "consume"
+              },
+              {
+                  "resource": "a52b4029d0f24c909b019c39e96df9d5",
+                  "action": "produce"
+              }
+          ]
+  }'
+```

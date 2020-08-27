@@ -114,14 +114,13 @@ public class EventServiceImpl implements EventService {
     Set<Privilege> setPrivilege = new HashSet<Privilege>();
     createMessageRequest.getPrivileges()
         .forEach(o -> setPrivilege.add(new Privilege(o.getResource(), o.getAction())));
-    AccessCredentialData accessCredentialData = new AccessCredentialData(
+    AccessCredential accessCredential = new AccessCredential(new AccessCredentialData(
         createMessageRequest.getKey(),
         dtExpired,
         createMessageRequest.getAppId(),
         setPrivilege,
         createMessageRequest.getSignature()
-    );
-    AccessCredential accessCredential = new AccessCredential(accessCredentialData);
+    ));
 
     SendWorker sendWorker = new SendWorker(configuration, accessCredential);
     fixedExecutor.execute(sendWorker);
