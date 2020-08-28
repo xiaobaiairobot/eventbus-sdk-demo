@@ -1,5 +1,6 @@
 package com.yunli.bigdata.example.service.impl;
 
+import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.Date;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -53,18 +54,27 @@ public class SendWorker implements Runnable {
         e.printStackTrace();
       }
     }
-    logger.info("消息发送已完成" + eventBusConfiguration.getSendTimes());
+    logger.info("消息发送请求已提交，数量：" + eventBusConfiguration.getSendTimes());
+    try {
+      producer.close();
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
   }
 
-  private static class myProducer extends com.yunli.bigdata.eventbus.sdk.Producer {
+  private class myProducer extends com.yunli.bigdata.eventbus.sdk.Producer {
+
+    Logger logger2 = LoggerFactory.getLogger(myProducer.class);
+
     public myProducer(String host, int port, AccessCredential accessCredential) {
       super(host, port, accessCredential);
     }
 
     @Override
     protected void onError(Throwable t) {
+      logger2.warn(t.getMessage());
       t.printStackTrace();
-      System.out.println("消息发送异常");
+      // System.out.println("消息发送异常");
     }
   }
 
