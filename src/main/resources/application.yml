@@ -13,6 +13,14 @@ spring:
     consumer-group: g_a52b4029d0f24c909b019c39e96df9d5
     send-times: 10000
     columns: long,string,string
+    # 证书信息
+  credential:
+    key: bigdata#system
+    signature: svZegQZ8eiTeQOe+r33cGiW2IFX8uNhD7AZT3JYYbQQjTrTtvGpHJHfdBKY3FzUHnrm1jGSzv/YquxEtspCaHWl8dblQ9epKqFQwEBKuOHXfH45YtYadNzpZcKM8D/rSI745s/8R0zcwaqq3PJdk03wen0gC8GlQBbvWZ93a4Aw=
+    expiredDate: 2043-06-23 00:00:00.000
+    appId: bigdata_dsep
+
+
 
 springfox:
   documentation:

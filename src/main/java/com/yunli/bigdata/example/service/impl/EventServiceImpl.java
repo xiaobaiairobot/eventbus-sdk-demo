@@ -1,5 +1,6 @@
 package com.yunli.bigdata.example.service.impl;
 
+import java.io.IOException;
 import java.text.ParseException;
 import java.util.Date;
 import java.util.HashSet;
@@ -12,6 +13,7 @@ import java.util.concurrent.TimeUnit;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
@@ -38,41 +40,13 @@ public class EventServiceImpl implements EventService {
 
   private final EventBusConfiguration eventBusConfiguration;
 
-  private final ExecutorService fixedExecutor = new ThreadPoolExecutor(3, 3, 0L, TimeUnit.MILLISECONDS,
-      new LinkedBlockingQueue<Runnable>(1024), new ThreadFactoryBuilder()
-      .setNameFormat("worker_pool").build(), new ThreadPoolExecutor.AbortPolicy());
-
+  private final EventSender eventSender;
 
   @Autowired
-  public EventServiceImpl(EventBusConfiguration eventBusConfiguration) {
+  public EventServiceImpl(EventBusConfiguration eventBusConfiguration,
+      EventSender eventSender) {
     this.eventBusConfiguration = eventBusConfiguration;
-  }
-
-  @Override
-  public void sendMessage() {
-    SendWorker sendWorker = new SendWorker(this.eventBusConfiguration);
-    fixedExecutor.execute(sendWorker);
-  }
-
-  @Override
-  public void createMessageService(CreateMessageRequest createMessageRequest) {
-    EventBusConfiguration configuration = new EventBusConfiguration();
-    // 参数配置
-    configuration.setServer(createMessageRequest.getServer() == null ? this.eventBusConfiguration.getServer()
-        : createMessageRequest.getServer());
-    configuration
-        .setProducerPort(createMessageRequest.getProducerPort() == null ? this.eventBusConfiguration.getProducerPort()
-            : createMessageRequest.getProducerPort());
-    configuration.setSendTimes(createMessageRequest.getSendTimes() == null ? this.eventBusConfiguration.getSendTimes()
-        : createMessageRequest.getSendTimes());
-    configuration
-        .setSourceTopic(createMessageRequest.getSourceTopic() == null ? this.eventBusConfiguration.getSourceTopic()
-            : createMessageRequest.getSourceTopic());
-    configuration.setColumns(createMessageRequest.getColumns() == null ? this.eventBusConfiguration.getColumns()
-        : createMessageRequest.getColumns());
-
-    SendWorker sendWorker = new SendWorker(configuration);
-    fixedExecutor.execute(sendWorker);
+    this.eventSender = eventSender;
   }
 
   /**
@@ -85,7 +59,8 @@ public class EventServiceImpl implements EventService {
         || StringUtils.isEmpty(createMessageRequest.getExpiredDate())
         || StringUtils.isEmpty(createMessageRequest.getSignature())
         || StringUtils.isEmpty(createMessageRequest.getKey())) {
-      throw new SdkException(CommonMessageCode.ERROR_1001, "证书参数");
+      logger.warn("没有发送证书信息,以无证书模式调用");
+      // throw new SdkException(CommonMessageCode.ERROR_1001, "证书参数");
     }
     // 此处只校验证书内容是否齐全，证书是否合法会由总线服务器校验
     EventBusConfiguration configuration = new EventBusConfiguration();
@@ -103,26 +78,31 @@ public class EventServiceImpl implements EventService {
     configuration.setColumns(createMessageRequest.getColumns() == null ? this.eventBusConfiguration.getColumns()
         : createMessageRequest.getColumns());
 
-    // String key, Date expiredDate, String appId, Set<AccessCredential.Privilege> privileges, String signature
-    Date dtExpired = null;
-    try {
-      dtExpired = DateUtil.fromFullString(createMessageRequest.getExpiredDate());
-    } catch (ParseException e) {
-      e.printStackTrace();
-      throw new SdkException(CommonMessageCode.ERROR_1004, "expiredDate", createMessageRequest.getExpiredDate());
+    AccessCredential accessCredential = null;
+    if (!StringUtils.isEmpty(createMessageRequest.getSignature())) {
+      Date dtExpired = null;
+      try {
+        dtExpired = DateUtil.fromFullString(createMessageRequest.getExpiredDate());
+      } catch (ParseException e) {
+        e.printStackTrace();
+        throw new SdkException(CommonMessageCode.ERROR_1004, "expiredDate", createMessageRequest.getExpiredDate());
+      }
+      Set<Privilege> setPrivilege = new HashSet<Privilege>();
+      createMessageRequest.getPrivileges()
+          .forEach(o -> setPrivilege.add(new Privilege(o.getResource(), o.getAction())));
+      accessCredential = new AccessCredential(new AccessCredentialData(
+          createMessageRequest.getKey(),
+          dtExpired,
+          createMessageRequest.getAppId(),
+          setPrivilege,
+          createMessageRequest.getSignature()
+      ));
+      this.eventSender.setAccessCredential(accessCredential);
     }
-    Set<Privilege> setPrivilege = new HashSet<Privilege>();
-    createMessageRequest.getPrivileges()
-        .forEach(o -> setPrivilege.add(new Privilege(o.getResource(), o.getAction())));
-    AccessCredential accessCredential = new AccessCredential(new AccessCredentialData(
-        createMessageRequest.getKey(),
-        dtExpired,
-        createMessageRequest.getAppId(),
-        setPrivilege,
-        createMessageRequest.getSignature()
-    ));
-
-    SendWorker sendWorker = new SendWorker(configuration, accessCredential);
-    fixedExecutor.execute(sendWorker);
+    try {
+      eventSender.sendEvent(configuration);
+    } catch (IOException | InterruptedException e) {
+      e.printStackTrace();
+    }
   }
 }

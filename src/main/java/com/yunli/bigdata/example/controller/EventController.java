@@ -29,7 +29,7 @@ import io.swagger.annotations.ApiResponses;
  * @author david
  * @date 2020/7/28 7:37 下午
  */
-@Api(tags = "event-eb-sample", value = "消息测试" )
+@Api(tags = "event-eb-sample", value = "消息测试")
 @ApiResponses(value = {
     @ApiResponse(code = EventResponseCode.SUCCESS_CODE, message = EventResponseCode.SUCCESS_MSG),
     @ApiResponse(code = EventResponseCode.BAD_REQUEST_CODE, message = EventResponseCode.BAD_REQUEST_MSG),
@@ -49,33 +49,6 @@ public class EventController {
   @Autowired
   public EventController(EventService eventService) {
     this.eventService = eventService;
-  }
-
-  @ApiOperation(value = "发送测试消息", notes = "发送测试消息", nickname = "sendEventBusMessage")
-  @GetMapping(value = "")
-  public ResponseEntity<Result> sendEventBusMessage() {
-    try {
-      eventService.sendMessage();
-      return ResponseEntity.ok().body(Result.success("success"));
-    } catch (Exception ex) {
-      ex.printStackTrace();
-      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-          .body(Result.error(CommonMessageCode.ERROR_500.getCode(), ex.getMessage()));
-    }
-  }
-
-  @ApiOperation(value = "按照参数配置发送消息，用于无证书校验", notes = "按照参数配置发送消息，用于无证书校验，不带任何证书信息", nickname = "sendMessageByParams")
-  @PostMapping(value = "")
-  public ResponseEntity<Result<String>> sendMessageByParams(
-      @ApiParam(value = "消息参数请求体", required = true) @Valid @RequestBody CreateMessageRequest createMessageRequest
-  ) {
-    try {
-      eventService.createMessageService(createMessageRequest);
-      return ResponseEntity.status(HttpStatus.CREATED).body(Result.success("作业提交成功"));
-    } catch (Exception e) {
-      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-          .body(Result.error(CommonMessageCode.ERROR_500.getCode(), CommonMessageCode.ERROR_500.getMessage()));
-    }
   }
 
   @ApiOperation(value = "按照参数配置发送消息，需要证书信息", notes = "按照参数配置发送消息，需要证书信息", nickname = "sendMessageByCredential")
