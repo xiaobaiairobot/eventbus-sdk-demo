@@ -18,7 +18,6 @@ datax*
 *.so.*
 *.dylib
 *.exe
-*.lib
 *.dll
 *.out
 *.app
@@ -31,7 +30,6 @@ datax*
 *.class
 
 # Java Package Files
-*.jar
 *.war
 *.ear
 

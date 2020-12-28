@@ -14,10 +14,17 @@
       <artifactId>spring-boot-starter-web</artifactId>
       <version>2.2.5.RELEASE</version>
     </dependency>
+<!--    <dependency>-->
+<!--      <groupId>com.yunli.bigdata.eventbus</groupId>-->
+<!--      <artifactId>federation-stub-service-common</artifactId>-->
+<!--      <version>1.0-SNAPSHOT</version>-->
+<!--    </dependency>-->
     <dependency>
       <groupId>com.yunli.bigdata.eventbus</groupId>
       <artifactId>federation-stub-service-common</artifactId>
-      <version>1.0-SNAPSHOT</version>
+      <version>1.0-RELEASE</version>
+      <scope>system</scope>
+      <systemPath>${project.basedir}/lib/eventbus-sdk.jar</systemPath>
     </dependency>
 
     <!-- swagger -->
