@@ -8,6 +8,9 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.CountDownLatch;
+
+import javax.websocket.OnError;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -40,19 +43,25 @@ public class EventReceiver {
 
   private final CredentialConfiguration credentialConfiguration;
 
-  private final Consumer consumer;
+  private Consumer consumer;
 
+  private List<Integer> parts;
+
+  private AccessCredential accessCredential = null;
+
+  private Integer port;
+
+  private CountDownLatch latch = new CountDownLatch(1);
 
   @Autowired
   public EventReceiver(EventBusConfiguration eventBusConfiguration,
       CredentialConfiguration credentialConfiguration) {
     this.eventBusConfiguration = eventBusConfiguration;
     this.credentialConfiguration = credentialConfiguration;
-    int port = this.eventBusConfiguration.getConsumerPort().intValue();
-    List<Integer> parts = new ArrayList<>();
+    port = this.eventBusConfiguration.getConsumerPort().intValue();
+    parts = new ArrayList<>();
     parts.add(0);
 
-    AccessCredential accessCredential = null;
     if (!StringUtils.isEmpty(credentialConfiguration.getSignature())) {
       Date dtExpired = null;
       try {
@@ -71,10 +80,38 @@ public class EventReceiver {
           credentialConfiguration.getSignature()
       ));
     }
+    if (consumer == null) {
+      initConsumer();
+      Thread watchThread = new Thread(() -> {
+        /**
+         * 异常时重建consumer
+         */
+        while (true) {
+          try {
+            latch.await();
+            latch = new CountDownLatch(1);
+            consumer.close();
+          } catch (Exception e) {
+            e.printStackTrace();
+          }
+          initConsumer();
+        }
+      });
+      watchThread.start();
+    }
+  }
 
+  private void initConsumer() {
     this.consumer = new myConsumer(eventBusConfiguration.getServer(), port,
         new ConsumerGroup(this.eventBusConfiguration.getConsumerGroup(),
-            this.eventBusConfiguration.getTargetTopic()), parts, accessCredential);
+            this.eventBusConfiguration.getTargetTopic()), parts, accessCredential) {
+      @Override
+      protected void onError(Throwable throwable) {
+        logger.warn("--------on error-------");
+        logger.warn(throwable.getMessage(), throwable);
+        latch.countDown();
+      }
+    };
   }
 
   private static class myConsumer extends Consumer {
@@ -92,6 +129,7 @@ public class EventReceiver {
 
     @Override
     protected void onError(Throwable t) {
+      logger.warn("运行过程出错，错误信息为： {}", t.getMessage(), t);
       t.printStackTrace();
       try {
         this.close();
