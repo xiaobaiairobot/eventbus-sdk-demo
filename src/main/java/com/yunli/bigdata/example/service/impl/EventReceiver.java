@@ -10,8 +10,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.concurrent.CountDownLatch;
 
-import javax.websocket.OnError;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,7 +23,7 @@ import com.yunli.bigdata.eventbus.sdk.AccessCredential.Privilege;
 import com.yunli.bigdata.eventbus.sdk.Consumer;
 import com.yunli.bigdata.eventbus.sdk.ConsumerGroup;
 import com.yunli.bigdata.eventbus.sdk.Event;
-import com.yunli.bigdata.example.config.CredentialConfiguration;
+import com.yunli.bigdata.example.config.ConsumerCredentialConfiguration;
 import com.yunli.bigdata.example.config.EventBusConfiguration;
 import com.yunli.bigdata.example.exception.SdkException;
 import com.yunli.bigdata.util.DateUtil;
@@ -41,7 +39,7 @@ public class EventReceiver {
 
   private final EventBusConfiguration eventBusConfiguration;
 
-  private final CredentialConfiguration credentialConfiguration;
+  private final ConsumerCredentialConfiguration consumerCredentialConfiguration;
 
   private Consumer consumer;
 
@@ -55,29 +53,31 @@ public class EventReceiver {
 
   @Autowired
   public EventReceiver(EventBusConfiguration eventBusConfiguration,
-      CredentialConfiguration credentialConfiguration) {
+      ConsumerCredentialConfiguration consumerCredentialConfiguration) {
     this.eventBusConfiguration = eventBusConfiguration;
-    this.credentialConfiguration = credentialConfiguration;
+    this.consumerCredentialConfiguration = consumerCredentialConfiguration;
     port = this.eventBusConfiguration.getConsumerPort().intValue();
     parts = new ArrayList<>();
     parts.add(0);
 
-    if (!StringUtils.isEmpty(credentialConfiguration.getSignature())) {
+    if (!StringUtils.isEmpty(consumerCredentialConfiguration.getSignature())) {
       Date dtExpired = null;
       try {
-        dtExpired = DateUtil.fromFullString(credentialConfiguration.getExpiredDate());
+        dtExpired = DateUtil.fromFullString(consumerCredentialConfiguration.getExpiredDate());
       } catch (ParseException e) {
         e.printStackTrace();
-        throw new SdkException(CommonMessageCode.ERROR_1004, "expiredDate", credentialConfiguration.getExpiredDate());
+        throw new SdkException(CommonMessageCode.ERROR_1004, "expiredDate", consumerCredentialConfiguration.
+
+            getExpiredDate());
       }
       Set<Privilege> setPrivilege = new HashSet<Privilege>();
       setPrivilege.add(new Privilege(eventBusConfiguration.getSourceTopic(), "consume"));
       accessCredential = new AccessCredential(new AccessCredentialData(
-          credentialConfiguration.getKey(),
+          consumerCredentialConfiguration.getKey(),
           dtExpired,
-          credentialConfiguration.getAppId(),
+          consumerCredentialConfiguration.getAppId(),
           setPrivilege,
-          credentialConfiguration.getSignature()
+          consumerCredentialConfiguration.getSignature()
       ));
     }
     if (consumer == null) {

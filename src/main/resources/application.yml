@@ -5,21 +5,25 @@ spring:
   application:
     name: event-eb-service
   event-bus:
-    server-ip: 10.177.28.221
+    server-ip: 172.30.1.180
     producer-port: 31236
     consumer-port: 31234
-    source-topic: table_quality_result
-    target-topic: table_quality_result
-    consumer-group: g_table_quality_result
+    source-topic: 8369b8ba350a4ceb8270aa9d865be2e3
+    target-topic: 8369b8ba350a4ceb8270aa9d865be2e3
+    consumer-group: g_8369b8ba350a4ceb8270aa9d865be2e3
     send-times: 1
     columns: long,string,string
     # 证书信息
   credential:
-    key: bigdata#system
-    signature: aaayzaV5wVm2vyAlrRddubH8TRpymCLm96lhxUjWnit/YL/HupMMvouY8l3IwV9ZbyVZRnaACm/ecqL+LnM7fBVZGMLjPhXonmAZs1EcuHsK68Z/c9zF50Mdje/3hbZ+WH7qIKzYiPzDPjJFpvz1pXB+kupvicWBglzMMXQVypcNrU=
-    expiredDate: 2020-08-28 19:00:00.000
+    key: bigdata#ad2d2567cc1274d95d86fd5bff51c83b
+    signature: OL04nI9u49IYXOe/3GU1sqpFusEuF4VeAjmDEQ9+OSRzy/9iEi8fr+3Nx+oSjDKG/WIZukSx13WgDqcowT7VuZVut0AJ1UVkPewZldT0j36d2UTbswkFXsWRpaKZZ/SwAWmoCreBRzKN1tAf0Few6mwJcFXHpKxQ5NP/BCWmXd4=
+    expiredDate: 2021-04-20 19:00:00.000
     appId: bigdata_dsep
-
+  consumer_credential:
+    key: bigdata#ad2d2567cc1274d95d86fd5bff51c83b
+    signature: KPm0E6p+TKKllEbJrFwPPbPfaZSN+VN3hnjruSrfDxk6xJXOmlW8v+KN8LLB6d7yIqaimGoAjXQ1CCgzzy4AfFJA1HVpxqkQgInE8ohypny13tZdOvFoBL6DXw482qhd+3rzJo2/OOL70jBZAkRTrWYHpb0wUa5RfIuakFkvSrY=
+    expiredDate: 2021-04-20 19:00:00.000
+    appId: bigdata_dsep
 
 
 springfox:
